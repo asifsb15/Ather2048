@@ -8,4 +8,19 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="dull_white">#E7E4E3</color>
+
+    <color name="tint0">#E7E4E3</color>
+    <color name="tint2">#D3D3D2</color>
+    <color name="tint4">#FBF2C2</color>
+    <color name="tint8">#F1AE7C</color>
+    <color name="tint16">#EE913E</color>
+    <color name="tint32">#DF7851</color>
+    <color name="tint64">#F6D12C</color>
+    <color name="tint128">#FCEA8D</color>
+    <color name="tint256">#EAF35B</color>
+    <color name="tint512">#CBD448</color>
+    <color name="tint1024">#42D0EA</color>
+    <color name="tint2048">#FFF700</color>
+
+
 </resources>

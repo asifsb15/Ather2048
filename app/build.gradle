@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.atherenergy.ather2048"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
