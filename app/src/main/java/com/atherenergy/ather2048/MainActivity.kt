@@ -137,6 +137,7 @@ class MainActivity : AppCompatActivity() {
                     onSwipeRight()
                 } else if (abs(deltaX) > MIN_DISTANCE && x2 < x1) {
                     Toast.makeText(applicationContext, "SwipeLeft", Toast.LENGTH_SHORT).show()
+                    onSwipeLeft()
                 } else if (abs(deltaY) > MIN_DISTANCE && y2 > y1) {
                     Toast.makeText(applicationContext, "SwipeDown", Toast.LENGTH_SHORT).show()
                 } else if (abs(deltaY) > MIN_DISTANCE && y2 < y1) {
@@ -145,6 +146,24 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> return super.onTouchEvent(event)
+        }
+    }
+
+    private fun slideRight() {
+        var k = 3
+        for (i in 0..3) {
+            for (j in 3 downTo 0) {
+                if (mat[i][j] != 0) {
+                    mat[i][k] = mat[i][j]
+                    k -= 1
+                }
+            }
+            if (k >= 0) {
+                for (j in k downTo 0) {
+                    mat[i][j] = 0
+                }
+            }
+            k = 3
         }
     }
 
@@ -173,6 +192,48 @@ class MainActivity : AppCompatActivity() {
         //slide all the value to right one more time
         slideRight()
         swipeValidationForALL()
+    }
+
+    private fun onSwipeLeft() {
+        for (i in 0..3) {
+            for (j in 0..3) {
+                prev[i][j] = mat[i][j]
+            }
+        }
+        slideLeft()
+        for (i in 0..3) {
+            for (j in 0..2) {
+                if (mat[i][j] == mat[i][j + 1]) {
+                    mat[i][j] += mat[i][j + 1]
+                    score += mat[i][j]
+                    if (mat[i][j] == 2048) {
+                        winner = true
+                    }
+                    mat[i][j + 1] = 0
+                }
+            }
+        }
+        slideLeft()
+        swipeValidationForALL()
+    }
+
+    private fun slideLeft() {
+
+        var k = 0
+        for (i in 0..3) {
+            for (j in 0..3) {
+                if (mat[i][j] != 0) {
+                    mat[i][k] = mat[i][j]
+                    k += 1
+                }
+            }
+            if (k <= 3) {
+                for (j in k..3) {
+                    mat[i][j] = 0
+                }
+            }
+            k = 0
+        }
     }
 
     private fun swipeValidationForALL() {
@@ -207,24 +268,6 @@ class MainActivity : AppCompatActivity() {
     private fun gameOver(): Boolean {
         //check all possible sides
         return false
-    }
-
-    private fun slideRight() {
-        var k = 3
-        for (i in 0..3) {
-            for (j in 3 downTo 0) {
-                if (mat[i][j] != 0) {
-                    mat[i][k] = mat[i][j]
-                    k -= 1
-                }
-            }
-            if (k >= 0) {
-                for (j in k downTo 0) {
-                    mat[i][j] = 0
-                }
-            }
-            k = 3
-        }
     }
 
     private fun showValues() {
