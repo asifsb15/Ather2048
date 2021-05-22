@@ -157,20 +157,69 @@ class MainActivity : AppCompatActivity() {
         }
         //slide all values
         slideRight()
+        //add if two values are same
+        for (i in 0..3) {
+            for (j in 3 downTo 1) {
+                if (mat[i][j] == mat[i][j - 1]) {
+                    mat[i][j] += mat[i][j - 1]
+                    score += mat[i][j]
+                    if (mat[i][j] == 2048) {
+                        winner = true
+                    }
+                    mat[i][j - 1] = 0
+                }
+            }
+        }
+        //slide all the value to right one more time
+        slideRight()
+        swipeValidationForALL()
+    }
 
+    private fun swipeValidationForALL() {
+        //check for the count
+        var count = 0
+        for (i in 0..3) {
+            for (j in 0..3) {
+                if (prev[i][j] == mat[i][j]) {
+                    count += 1
+                }
+            }
+        }
+
+        if (count < 16) {
+            //still space available fill the grid with random number
+            insertNumberInRandom()
+        } else if (count == 16) {
+            if (gameOver()) {
+                Toast.makeText(this, getString(R.string.game_over), Toast.LENGTH_LONG).show()
+            }
+        }
+        //show values in UI and update the score
+        showValues()
+        updateScore()
+
+        //if value is true end the process and show winner
+        if (winner) {
+            Toast.makeText(this, getString(R.string.winner), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun gameOver(): Boolean {
+        //check all possible sides
+        return false
     }
 
     private fun slideRight() {
         var k = 3
         for (i in 0..3) {
             for (j in 3 downTo 0) {
-                if (mat[i][j] != 0){
+                if (mat[i][j] != 0) {
                     mat[i][k] = mat[i][j]
-                    k-=1
+                    k -= 1
                 }
             }
-            if(k>=0){
-                for (j in k downTo 0){
+            if (k >= 0) {
+                for (j in k downTo 0) {
                     mat[i][j] = 0
                 }
             }
