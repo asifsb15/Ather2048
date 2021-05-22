@@ -16,10 +16,12 @@ class MainActivity : AppCompatActivity() {
     private val MIN_DISTANCE: Int = 150
     private var winner = false
     var score = 0
-    var mat = Array(4) { IntArray(4) }
+    private var mat = Array(4) { IntArray(4) }
     var prev = Array(4) { IntArray(4) }
     var textIds = Array(4) { IntArray(4) }
     var cardIds = Array(4) { IntArray(4) }
+    private val evenArray = mutableListOf<Int>(2, 4)
+    private val positionArray = mutableListOf<Int>(0, 1, 2, 3)
     private fun mappingGrid() {
         textIds[0][0] = R.id.text1
         textIds[0][1] = R.id.text2
@@ -62,9 +64,60 @@ class MainActivity : AppCompatActivity() {
         initGame()
     }
 
+    //initialize all the values of the game
     private fun initGame() {
+        clearGrid()
+        mappingGrid()
+        //set two values at the beginning
+        val randomValue1 = randomNumberGen(evenArray)
+        val randomValue2 = randomNumberGen(evenArray)
+        val grid1Pos1 = randomNumberGen(positionArray)
+        val grid1Pos2 = randomNumberGen(positionArray)
+        val grid2Pos1 = randomNumberGen(positionArray)
+        val grid2Pos2 = randomNumberGen(positionArray)
+        mat[grid1Pos1][grid1Pos2] = randomValue1
+        mat[grid2Pos1][grid2Pos2] = randomValue2
+        //show the values in UI
+        showValues()
+        updateScore()
     }
 
+    //reset all the grid values at the beginning
+    private fun clearGrid() {
+        for (i in 0..3) {
+            for (j in 0..3) {
+                mat[i][j] = 0
+            }
+        }
+    }
+
+    //updates score here
+    private fun updateScore() {
+        val textView: TextView = findViewById(R.id.score1)
+        textView.text = getString(R.string.score).plus(" ").plus(score)
+    }
+
+    private fun insertNumberInRandom() {
+        var flag = false
+        //run loop till flag becomes true
+        while (!flag) {
+            flag = insertNumber()
+        }
+    }
+
+    private fun insertNumber(): Boolean {
+        val valueForGrid = randomNumberGen(evenArray)
+        val gridPos1 = randomNumberGen(positionArray)
+        val gridPos2 = randomNumberGen(positionArray)
+        return if (mat[gridPos1][gridPos2] == 0) {
+            mat[gridPos1][gridPos2] = valueForGrid
+            val textView: TextView = findViewById(textIds[gridPos1][gridPos2])
+            textView.text = valueForGrid.toString()
+            true
+        } else {
+            false
+        }
+    }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         //Toast.makeText(applicationContext,"Entered onTouch",Toast.LENGTH_SHORT).show()
@@ -80,13 +133,14 @@ class MainActivity : AppCompatActivity() {
                 val deltaX = x2 - x1
                 val deltaY = y2 - y1
                 if (abs(deltaX) > MIN_DISTANCE && x2 > x1) {
-                    Toast.makeText(applicationContext, "SwipeRight", Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, "SwipeRight", Toast.LENGTH_SHORT).show()
+                    onSwipeRight()
                 } else if (abs(deltaX) > MIN_DISTANCE && x2 < x1) {
-                    Toast.makeText(applicationContext, "SwipeLeft", Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, "SwipeLeft", Toast.LENGTH_SHORT).show()
                 } else if (abs(deltaY) > MIN_DISTANCE && y2 > y1) {
-                    Toast.makeText(applicationContext, "SwipeDown", Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, "SwipeDown", Toast.LENGTH_SHORT).show()
                 } else if (abs(deltaY) > MIN_DISTANCE && y2 < y1) {
-                    Toast.makeText(applicationContext, "SwipeUp", Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, "SwipeUp", Toast.LENGTH_SHORT).show()
                 }
                 true
             }
@@ -94,7 +148,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showValues() {
+    private fun onSwipeRight() {
+        // keep all the value in temp int array
+        for (i in 0..3) {
+            for (j in 0..3) {
+                prev[i][j] = mat[i][j]
+            }
+        }
+        //slide all values
+        slideRight()
+
+    }
+
+    private fun slideRight() {
+        var k = 3
+        for (i in 0..3) {
+            for (j in 3 downTo 0) {
+                if (mat[i][j] != 0){
+                    mat[i][k] = mat[i][j]
+                    k-=1
+                }
+            }
+            if(k>=0){
+                for (j in k downTo 0){
+                    mat[i][j] = 0
+                }
+            }
+            k = 3
+        }
+    }
+
+    private fun showValues() {
         for (i in 0..3) {
             for (j in 0..3) {
                 val t: TextView = findViewById(textIds[i][j])
@@ -124,19 +208,44 @@ class MainActivity : AppCompatActivity() {
                             c.setCardBackgroundColor(resources.getColor(R.color.tint64, this.theme))
                         }
                         mat[i][j] == 128 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint128, this.theme))
+                            c.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint128,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 256 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint256, this.theme))
+                            c.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint256,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 512 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint512, this.theme))
+                            c.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint512,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 1024 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint1024, this.theme))
+                            c.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint1024,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 2048 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint2048, this.theme))
+                            c.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint2048,
+                                    this.theme
+                                )
+                            )
                         }
                     }
                 }
