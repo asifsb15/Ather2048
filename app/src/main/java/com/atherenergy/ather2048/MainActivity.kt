@@ -350,7 +350,35 @@ class MainActivity : AppCompatActivity() {
 
     private fun gameOver(): Boolean {
         //check all possible sides
-        return false
+        for(i in 0..3){
+            for(j in 0..3){
+                //check if any grid is empty
+                if(mat[i][j]==0){
+                    return false
+                }
+            }
+        }
+        //slide all grids
+        slideUp()
+        slideDown()
+        slideLeft()
+        slideRight()
+        //check for the grid count
+        var count =0
+        for (i in 0..3){
+            for(j in 0..3){
+                if(prev[i][j]==mat[i][j]){
+                    count+=1
+                }
+            }
+        }
+        //move all tep matrix array to main array
+        for (i in 0..3){
+            for (j in 0..3){
+                mat[i][j]=prev[i][j]
+            }
+        }
+        return count==16
     }
 
     private fun showValues() {
