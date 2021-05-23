@@ -253,7 +253,7 @@ class MainActivity : AppCompatActivity() {
                     score += mat[i][j]
                     if (mat[i][j] == 2048)
                         winner = true
-                    mat[i][j] = 0
+                    mat[i+1][j] = 0
                 }
             }
         }
@@ -293,7 +293,7 @@ class MainActivity : AppCompatActivity() {
                     score+=mat[i][j]
                     if(mat[i][j]==2048)
                         winner = true
-                    mat[i][j]=0
+                    mat[i-1][j]=0
                 }
             }
         }
