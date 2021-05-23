@@ -1,9 +1,11 @@
 package com.atherenergy.ather2048
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import kotlin.math.abs
@@ -133,16 +135,16 @@ class MainActivity : AppCompatActivity() {
                 val deltaX = x2 - x1
                 val deltaY = y2 - y1
                 if (abs(deltaX) > MIN_DISTANCE && x2 > x1) {
-                    Toast.makeText(applicationContext, "SwipeRight", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, "SwipeRight", Toast.LENGTH_SHORT).show()
                     onSwipeRight()
                 } else if (abs(deltaX) > MIN_DISTANCE && x2 < x1) {
-                    Toast.makeText(applicationContext, "SwipeLeft", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, "SwipeLeft", Toast.LENGTH_SHORT).show()
                     onSwipeLeft()
                 } else if (abs(deltaY) > MIN_DISTANCE && y2 > y1) {
-                    Toast.makeText(applicationContext, "SwipeDown", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, "SwipeDown", Toast.LENGTH_SHORT).show()
                     onSwipeDown()
                 } else if (abs(deltaY) > MIN_DISTANCE && y2 < y1) {
-                    Toast.makeText(applicationContext, "SwipeUp", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, "SwipeUp", Toast.LENGTH_SHORT).show()
                     onSwipeUp()
                 }
                 true
@@ -253,7 +255,7 @@ class MainActivity : AppCompatActivity() {
                     score += mat[i][j]
                     if (mat[i][j] == 2048)
                         winner = true
-                    mat[i+1][j] = 0
+                    mat[i + 1][j] = 0
                 }
             }
         }
@@ -279,21 +281,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onSwipeDown(){
-        for(i in 0..3){
-            for (j in 0..3){
-                prev[i][j]=mat[i][j]
+    private fun onSwipeDown() {
+        for (i in 0..3) {
+            for (j in 0..3) {
+                prev[i][j] = mat[i][j]
             }
         }
         slideDown()
-        for (j in 0..3){
-            for (i in 3 downTo 1){
-                if(mat[i][j]==mat[i-1][j]){
-                    mat[i][j]+=mat[i-1][j]
-                    score+=mat[i][j]
-                    if(mat[i][j]==2048)
+        for (j in 0..3) {
+            for (i in 3 downTo 1) {
+                if (mat[i][j] == mat[i - 1][j]) {
+                    mat[i][j] += mat[i - 1][j]
+                    score += mat[i][j]
+                    if (mat[i][j] == 2048)
                         winner = true
-                    mat[i-1][j]=0
+                    mat[i - 1][j] = 0
                 }
             }
         }
@@ -335,7 +337,8 @@ class MainActivity : AppCompatActivity() {
             insertNumberInRandom()
         } else if (count == 16) {
             if (gameOver()) {
-                Toast.makeText(this, getString(R.string.game_over), Toast.LENGTH_LONG).show()
+                dialogPopup(true)
+//                Toast.makeText(this, getString(R.string.game_over), Toast.LENGTH_LONG).show()
             }
         }
         //show values in UI and update the score
@@ -344,16 +347,17 @@ class MainActivity : AppCompatActivity() {
 
         //if value is true end the process and show winner
         if (winner) {
-            Toast.makeText(this, getString(R.string.winner), Toast.LENGTH_LONG).show()
+            dialogPopup(false)
+//            Toast.makeText(this, getString(R.string.winner), Toast.LENGTH_LONG).show()
         }
     }
 
     private fun gameOver(): Boolean {
         //check all possible sides
-        for(i in 0..3){
-            for(j in 0..3){
+        for (i in 0..3) {
+            for (j in 0..3) {
                 //check if any grid is empty
-                if(mat[i][j]==0){
+                if (mat[i][j] == 0) {
                     return false
                 }
             }
@@ -364,21 +368,21 @@ class MainActivity : AppCompatActivity() {
         slideLeft()
         slideRight()
         //check for the grid count
-        var count =0
-        for (i in 0..3){
-            for(j in 0..3){
-                if(prev[i][j]==mat[i][j]){
-                    count+=1
+        var count = 0
+        for (i in 0..3) {
+            for (j in 0..3) {
+                if (prev[i][j] == mat[i][j]) {
+                    count += 1
                 }
             }
         }
         //move all tep matrix array to main array
-        for (i in 0..3){
-            for (j in 0..3){
-                mat[i][j]=prev[i][j]
+        for (i in 0..3) {
+            for (j in 0..3) {
+                mat[i][j] = prev[i][j]
             }
         }
-        return count==16
+        return count == 16
     }
 
     private fun showValues() {
@@ -458,6 +462,33 @@ class MainActivity : AppCompatActivity() {
 
     private fun randomNumberGen(x: MutableList<Int>): Int {
         return x.shuffled().first()
+    }
+
+    private fun dialogPopup(isGameOver: Boolean) {
+        try {
+            val builder =
+                AlertDialog.Builder(this)
+            builder.setTitle(if (isGameOver) getString(R.string.game_over) else getString(R.string.winner))
+            val dialogClickListener =
+                DialogInterface.OnClickListener { _, which ->
+                    when (which) {
+                        DialogInterface.BUTTON_POSITIVE ->  //Yes button clicked
+                        {
+                            //replay
+                            initGame()
+                            builder.create().dismiss()
+                        }
+                        DialogInterface.BUTTON_NEGATIVE ->  //No button clicked
+                            builder.create().dismiss()
+                    }
+                }
+            builder.setMessage(getString(R.string.play_again))
+                .setPositiveButton(getString(R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(R.string.no), dialogClickListener).show()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 }
