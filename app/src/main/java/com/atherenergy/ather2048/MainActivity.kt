@@ -4,10 +4,11 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.databinding.DataBindingUtil
+import com.atherenergy.ather2048.databinding.ActivityMainBinding
 import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
@@ -16,60 +17,27 @@ class MainActivity : AppCompatActivity() {
     private var y1: Float = 0.0F
     private var y2: Float = 0.0F
     private val MIN_DISTANCE: Int = 150
-    private var winner = false
-    var score = 0
+    private var isWinner = false
+    private var totalScore = 0
     private var mat = Array(4) { IntArray(4) }
-    var prev = Array(4) { IntArray(4) }
-    var textIds = Array(4) { IntArray(4) }
-    var cardIds = Array(4) { IntArray(4) }
+    private var prev = Array(4) { IntArray(4) }
+    private var textViewIds = Array(4) { IntArray(4) }
+    private var cardViewIds = Array(4) { IntArray(4) }
     private val evenArray = mutableListOf<Int>(2, 4)
     private val positionArray = mutableListOf<Int>(0, 1, 2, 3)
-    private fun mappingGrid() {
-        textIds[0][0] = R.id.text1
-        textIds[0][1] = R.id.text2
-        textIds[0][2] = R.id.text3
-        textIds[0][3] = R.id.text4
-        textIds[1][0] = R.id.text5
-        textIds[1][1] = R.id.text6
-        textIds[1][2] = R.id.text7
-        textIds[1][3] = R.id.text8
-        textIds[2][0] = R.id.text9
-        textIds[2][1] = R.id.text10
-        textIds[2][2] = R.id.text11
-        textIds[2][3] = R.id.text12
-        textIds[3][0] = R.id.text13
-        textIds[3][1] = R.id.text14
-        textIds[3][2] = R.id.text15
-        textIds[3][3] = R.id.text16
-        cardIds[0][0] = R.id.Grid1
-        cardIds[0][1] = R.id.Grid2
-        cardIds[0][2] = R.id.Grid3
-        cardIds[0][3] = R.id.Grid4
-        cardIds[1][0] = R.id.Grid5
-        cardIds[1][1] = R.id.Grid6
-        cardIds[1][2] = R.id.Grid7
-        cardIds[1][3] = R.id.Grid8
-        cardIds[2][0] = R.id.Grid9
-        cardIds[2][1] = R.id.Grid10
-        cardIds[2][2] = R.id.Grid11
-        cardIds[2][3] = R.id.Grid12
-        cardIds[3][0] = R.id.Grid13
-        cardIds[3][1] = R.id.Grid14
-        cardIds[3][2] = R.id.Grid15
-        cardIds[3][3] = R.id.Grid16
-    }
+    lateinit var mBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         //develop branch test
         initGame()
     }
 
     //initialize all the values of the game
     private fun initGame() {
-        clearGrid()
-        mappingGrid()
+        resetGrid()
+        idsMapping()
         //set two values at the beginning
         val randomValue1 = randomNumberGen(evenArray)
         val randomValue2 = randomNumberGen(evenArray)
@@ -80,12 +48,12 @@ class MainActivity : AppCompatActivity() {
         mat[grid1Pos1][grid1Pos2] = randomValue1
         mat[grid2Pos1][grid2Pos2] = randomValue2
         //show the values in UI
-        showValues()
+        setUI()
         updateScore()
     }
 
     //reset all the grid values at the beginning
-    private fun clearGrid() {
+    private fun resetGrid() {
         for (i in 0..3) {
             for (j in 0..3) {
                 mat[i][j] = 0
@@ -95,8 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     //updates score here
     private fun updateScore() {
-        val textView: TextView = findViewById(R.id.score1)
-        textView.text = getString(R.string.score).plus(" ").plus(score)
+        mBinding.tvScore.text = getString(R.string.score).plus(" ").plus(totalScore)
     }
 
     private fun insertNumberInRandom() {
@@ -113,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         val gridPos2 = randomNumberGen(positionArray)
         return if (mat[gridPos1][gridPos2] == 0) {
             mat[gridPos1][gridPos2] = valueForGrid
-            val textView: TextView = findViewById(textIds[gridPos1][gridPos2])
+            val textView: TextView = findViewById(textViewIds[gridPos1][gridPos2])
             textView.text = valueForGrid.toString()
             true
         } else {
@@ -185,9 +152,9 @@ class MainActivity : AppCompatActivity() {
             for (j in 3 downTo 1) {
                 if (mat[i][j] == mat[i][j - 1]) {
                     mat[i][j] += mat[i][j - 1]
-                    score += mat[i][j]
+                    totalScore += mat[i][j]
                     if (mat[i][j] == 2048) {
-                        winner = true
+                        isWinner = true
                     }
                     mat[i][j - 1] = 0
                 }
@@ -209,9 +176,9 @@ class MainActivity : AppCompatActivity() {
             for (j in 0..2) {
                 if (mat[i][j] == mat[i][j + 1]) {
                     mat[i][j] += mat[i][j + 1]
-                    score += mat[i][j]
+                    totalScore += mat[i][j]
                     if (mat[i][j] == 2048) {
-                        winner = true
+                        isWinner = true
                     }
                     mat[i][j + 1] = 0
                 }
@@ -252,9 +219,9 @@ class MainActivity : AppCompatActivity() {
             for (i in 0..2) {
                 if (mat[i][j] == mat[i + 1][j]) {
                     mat[i][j] += mat[i + 1][j]
-                    score += mat[i][j]
+                    totalScore += mat[i][j]
                     if (mat[i][j] == 2048)
-                        winner = true
+                        isWinner = true
                     mat[i + 1][j] = 0
                 }
             }
@@ -292,9 +259,9 @@ class MainActivity : AppCompatActivity() {
             for (i in 3 downTo 1) {
                 if (mat[i][j] == mat[i - 1][j]) {
                     mat[i][j] += mat[i - 1][j]
-                    score += mat[i][j]
+                    totalScore += mat[i][j]
                     if (mat[i][j] == 2048)
-                        winner = true
+                        isWinner = true
                     mat[i - 1][j] = 0
                 }
             }
@@ -336,23 +303,23 @@ class MainActivity : AppCompatActivity() {
             //still space available fill the grid with random number
             insertNumberInRandom()
         } else if (count == 16) {
-            if (gameOver()) {
+            if (gameOverCheck()) {
                 dialogPopup(true)
 //                Toast.makeText(this, getString(R.string.game_over), Toast.LENGTH_LONG).show()
             }
         }
         //show values in UI and update the score
-        showValues()
+        setUI()
         updateScore()
 
         //if value is true end the process and show winner
-        if (winner) {
+        if (isWinner) {
             dialogPopup(false)
 //            Toast.makeText(this, getString(R.string.winner), Toast.LENGTH_LONG).show()
         }
     }
 
-    private fun gameOver(): Boolean {
+    private fun gameOverCheck(): Boolean {
         //check all possible sides
         for (i in 0..3) {
             for (j in 0..3) {
@@ -385,37 +352,67 @@ class MainActivity : AppCompatActivity() {
         return count == 16
     }
 
-    private fun showValues() {
+    private fun setUI() {
         for (i in 0..3) {
             for (j in 0..3) {
-                val t: TextView = findViewById(textIds[i][j])
-                val c: CardView = findViewById(cardIds[i][j])
+                val textView: TextView = findViewById(textViewIds[i][j])
+                val cardView: CardView = findViewById(cardViewIds[i][j])
                 if (mat[i][j] == 0) {
-                    t.text = ("")
-                    c.setCardBackgroundColor(resources.getColor(R.color.tint0, this.theme))
+                    textView.text = ("")
+                    cardView.setCardBackgroundColor(resources.getColor(R.color.tint0, this.theme))
                 } else {
-                    t.text = (mat[i][j].toString())
+                    textView.text = (mat[i][j].toString())
                     when {
                         mat[i][j] == 2 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint2, this.theme))
+                            cardView.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint2,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 4 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint4, this.theme))
+                            cardView.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint4,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 8 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint8, this.theme))
+                            cardView.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint8,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 16 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint16, this.theme))
+                            cardView.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint16,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 32 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint32, this.theme))
+                            cardView.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint32,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 64 -> {
-                            c.setCardBackgroundColor(resources.getColor(R.color.tint64, this.theme))
+                            cardView.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tint64,
+                                    this.theme
+                                )
+                            )
                         }
                         mat[i][j] == 128 -> {
-                            c.setCardBackgroundColor(
+                            cardView.setCardBackgroundColor(
                                 resources.getColor(
                                     R.color.tint128,
                                     this.theme
@@ -423,7 +420,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         }
                         mat[i][j] == 256 -> {
-                            c.setCardBackgroundColor(
+                            cardView.setCardBackgroundColor(
                                 resources.getColor(
                                     R.color.tint256,
                                     this.theme
@@ -431,7 +428,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         }
                         mat[i][j] == 512 -> {
-                            c.setCardBackgroundColor(
+                            cardView.setCardBackgroundColor(
                                 resources.getColor(
                                     R.color.tint512,
                                     this.theme
@@ -439,7 +436,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         }
                         mat[i][j] == 1024 -> {
-                            c.setCardBackgroundColor(
+                            cardView.setCardBackgroundColor(
                                 resources.getColor(
                                     R.color.tint1024,
                                     this.theme
@@ -447,7 +444,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         }
                         mat[i][j] == 2048 -> {
-                            c.setCardBackgroundColor(
+                            cardView.setCardBackgroundColor(
                                 resources.getColor(
                                     R.color.tint2048,
                                     this.theme
@@ -474,21 +471,58 @@ class MainActivity : AppCompatActivity() {
                     when (which) {
                         DialogInterface.BUTTON_POSITIVE ->  //Yes button clicked
                         {
-                            //replay
-                            initGame()
+                            if (isGameOver){
+                                //replay
+                                initGame()
+                            }
                             builder.create().dismiss()
                         }
                         DialogInterface.BUTTON_NEGATIVE ->  //No button clicked
                             builder.create().dismiss()
                     }
                 }
-            builder.setMessage(getString(R.string.play_again))
+            builder.setMessage(if (isGameOver) getString(R.string.play_again) else getString(R.string.play_continue))
                 .setPositiveButton(getString(R.string.yes), dialogClickListener)
                 .setNegativeButton(getString(R.string.no), dialogClickListener).show()
 
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun idsMapping() {
+        textViewIds[0][0] = mBinding.text1.id
+        textViewIds[0][1] = mBinding.text2.id
+        textViewIds[0][2] = mBinding.text3.id
+        textViewIds[0][3] = mBinding.text4.id
+        textViewIds[1][0] = mBinding.text5.id
+        textViewIds[1][1] = mBinding.text6.id
+        textViewIds[1][2] = mBinding.text7.id
+        textViewIds[1][3] = mBinding.text8.id
+        textViewIds[2][0] = mBinding.text9.id
+        textViewIds[2][1] = mBinding.text10.id
+        textViewIds[2][2] = mBinding.text11.id
+        textViewIds[2][3] = mBinding.text12.id
+        textViewIds[3][0] = mBinding.text13.id
+        textViewIds[3][1] = mBinding.text14.id
+        textViewIds[3][2] = mBinding.text15.id
+        textViewIds[3][3] = mBinding.text16.id
+        cardViewIds[0][0] = mBinding.Grid1.id
+        cardViewIds[0][1] = mBinding.Grid2.id
+        cardViewIds[0][2] = mBinding.Grid3.id
+        cardViewIds[0][3] = mBinding.Grid4.id
+        cardViewIds[1][0] = mBinding.Grid5.id
+        cardViewIds[1][1] = mBinding.Grid6.id
+        cardViewIds[1][2] = mBinding.Grid7.id
+        cardViewIds[1][3] = mBinding.Grid8.id
+        cardViewIds[2][0] = mBinding.Grid9.id
+        cardViewIds[2][1] = mBinding.Grid10.id
+        cardViewIds[2][2] = mBinding.Grid11.id
+        cardViewIds[2][3] = mBinding.Grid12.id
+        cardViewIds[3][0] = mBinding.Grid13.id
+        cardViewIds[3][1] = mBinding.Grid14.id
+        cardViewIds[3][2] = mBinding.Grid15.id
+        cardViewIds[3][3] = mBinding.Grid16.id
     }
 
 }
