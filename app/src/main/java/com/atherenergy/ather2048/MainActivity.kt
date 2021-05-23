@@ -140,8 +140,10 @@ class MainActivity : AppCompatActivity() {
                     onSwipeLeft()
                 } else if (abs(deltaY) > MIN_DISTANCE && y2 > y1) {
                     Toast.makeText(applicationContext, "SwipeDown", Toast.LENGTH_SHORT).show()
+                    onSwipeDown()
                 } else if (abs(deltaY) > MIN_DISTANCE && y2 < y1) {
                     Toast.makeText(applicationContext, "SwipeUp", Toast.LENGTH_SHORT).show()
+                    onSwipeUp()
                 }
                 true
             }
@@ -233,6 +235,87 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             k = 0
+        }
+    }
+
+    private fun onSwipeUp() {
+
+        for (i in 0..3) {
+            for (j in 0..3) {
+                prev[i][j] = mat[i][j]
+            }
+        }
+        slideUp()
+        for (j in 0..3) {
+            for (i in 0..2) {
+                if (mat[i][j] == mat[i + 1][j]) {
+                    mat[i][j] += mat[i + 1][j]
+                    score += mat[i][j]
+                    if (mat[i][j] == 2048)
+                        winner = true
+                    mat[i][j] = 0
+                }
+            }
+        }
+        slideUp()
+        swipeValidationForALL()
+    }
+
+    private fun slideUp() {
+        var k = 0
+        for (j in 0..3) {
+            for (i in 0..3) {
+                if (mat[i][j] != 0) {
+                    mat[k][j] = mat[i][j]
+                    k += 1
+                }
+            }
+            if (k <= 3) {
+                for (i in k..3) {
+                    mat[i][j] = 0
+                }
+            }
+            k = 0
+        }
+    }
+
+    private fun onSwipeDown(){
+        for(i in 0..3){
+            for (j in 0..3){
+                prev[i][j]=mat[i][j]
+            }
+        }
+        slideDown()
+        for (j in 0..3){
+            for (i in 3 downTo 1){
+                if(mat[i][j]==mat[i-1][j]){
+                    mat[i][j]+=mat[i-1][j]
+                    score+=mat[i][j]
+                    if(mat[i][j]==2048)
+                        winner = true
+                    mat[i][j]=0
+                }
+            }
+        }
+        slideDown()
+        swipeValidationForALL()
+    }
+
+    private fun slideDown() {
+        var k = 3
+        for (j in 0..3) {
+            for (i in 3 downTo 0) {
+                if (mat[i][j] != 0) {
+                    mat[k][j] = mat[i][j]
+                    k -= 1
+                }
+            }
+            if (k >= 0) {
+                for (i in k downTo 0) {
+                    mat[i][j] = 0
+                }
+            }
+            k = 3
         }
     }
 
