@@ -7,5 +7,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="play_again">Do you want to play again?</string>
-    <string name="play_continue">Do you want to continue?</string>
+    <string name="play_continue">Do you want to play for</string>
 </resources>

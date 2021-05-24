@@ -21,6 +21,7 @@
     <color name="tint512">#CBD448</color>
     <color name="tint1024">#42D0EA</color>
     <color name="tint2048">#FFF700</color>
+    <color name="tintAbove">#FF4500</color>
 
 
 </resources>

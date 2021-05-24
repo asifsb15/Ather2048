@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private var y2: Float = 0.0F
     private val MIN_DISTANCE: Int = 150
     private var isWinner = false
+    private var gridScoreToWin = 2048 // this goes on like 2048, 4096...
     private var totalScore = 0
     private var mat = Array(4) { IntArray(4) }
     private var prev = Array(4) { IntArray(4) }
@@ -153,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                 if (mat[i][j] == mat[i][j - 1]) {
                     mat[i][j] += mat[i][j - 1]
                     totalScore += mat[i][j]
-                    if (mat[i][j] == 2048) {
+                    if (mat[i][j] == gridScoreToWin) {
                         isWinner = true
                     }
                     mat[i][j - 1] = 0
@@ -177,7 +178,7 @@ class MainActivity : AppCompatActivity() {
                 if (mat[i][j] == mat[i][j + 1]) {
                     mat[i][j] += mat[i][j + 1]
                     totalScore += mat[i][j]
-                    if (mat[i][j] == 2048) {
+                    if (mat[i][j] == gridScoreToWin) {
                         isWinner = true
                     }
                     mat[i][j + 1] = 0
@@ -220,7 +221,7 @@ class MainActivity : AppCompatActivity() {
                 if (mat[i][j] == mat[i + 1][j]) {
                     mat[i][j] += mat[i + 1][j]
                     totalScore += mat[i][j]
-                    if (mat[i][j] == 2048)
+                    if (mat[i][j] == gridScoreToWin)
                         isWinner = true
                     mat[i + 1][j] = 0
                 }
@@ -260,7 +261,7 @@ class MainActivity : AppCompatActivity() {
                 if (mat[i][j] == mat[i - 1][j]) {
                     mat[i][j] += mat[i - 1][j]
                     totalScore += mat[i][j]
-                    if (mat[i][j] == 2048)
+                    if (mat[i][j] == gridScoreToWin)
                         isWinner = true
                     mat[i - 1][j] = 0
                 }
@@ -451,6 +452,14 @@ class MainActivity : AppCompatActivity() {
                                 )
                             )
                         }
+                        else -> {
+                            cardView.setCardBackgroundColor(
+                                resources.getColor(
+                                    R.color.tintAbove,
+                                    this.theme
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -471,9 +480,12 @@ class MainActivity : AppCompatActivity() {
                     when (which) {
                         DialogInterface.BUTTON_POSITIVE ->  //Yes button clicked
                         {
-                            if (isGameOver){
+                            if (isGameOver) {
                                 //replay
                                 initGame()
+                                gridScoreToWin = 2048
+                            }else{
+                                gridScoreToWin *= 2
                             }
                             builder.create().dismiss()
                         }
@@ -481,7 +493,11 @@ class MainActivity : AppCompatActivity() {
                             builder.create().dismiss()
                     }
                 }
-            builder.setMessage(if (isGameOver) getString(R.string.play_again) else getString(R.string.play_continue))
+            var value = gridScoreToWin
+            if(!isGameOver){
+                value = gridScoreToWin*2
+            }
+            builder.setMessage(if (isGameOver) getString(R.string.play_again) else getString(R.string.play_continue).plus(" $value"))
                 .setPositiveButton(getString(R.string.yes), dialogClickListener)
                 .setNegativeButton(getString(R.string.no), dialogClickListener).show()
 
