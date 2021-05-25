@@ -1,5 +1,5 @@
 About Ather2048 app:
-   This 4x4 grid 2048 app, by using arrow keys to merge the adjacent tiles which is of same number until user reaches 2048 grid point. user can contiue
+   This is 4x4 grid 2048 app, by using arrow keys to merge the adjacent tiles which is of same number until user reaches 2048 grid point. user can contiue
    playing untill they reach a point where all the grids are filled or cannot moved.
 
 How it works?:
